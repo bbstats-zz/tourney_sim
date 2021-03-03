@@ -54,19 +54,18 @@ class Bracket:
         self.play_in = len(self.play_in_matchups) > 0
 
         self.n_rounds = int(np.log2(len(self.teams))) + self.play_in
-        print(f'rounds: {self.n_rounds}')
+        print(f"rounds: {self.n_rounds}")
 
         self.current_round = None
         self.current_round_is_play_in = False
         self.current_round_team_a_list = []
         self.current_round_team_b_list = []
-        
 
     def get_probabilities_df(self):
         # by using permutations we are technically 2x the computational work here
         # but this makes the code much simpler
         # we use a dataframe for easy mapping and vectorization of scipy.stats.norm
-        
+
         team_combos = permutations(self.ratings.keys(), 2)
         df = pd.DataFrame(list(team_combos), columns=["a", "b"])
         df["a_rtg"] = df["a"].map(self.ratings)
@@ -97,8 +96,6 @@ class Bracket:
         else:
             self.current_matchups = self.remaining_teams
 
-
-
     def update_teams(self):
         self.current_round_team_a_list = self.current_matchups[::2]
         self.current_round_team_b_list = self.current_matchups[1::2]
@@ -112,8 +109,8 @@ class Bracket:
         )
 
     def get_team_a_probs(self):
-        team_a_mask = self.probabilities_df['a'].isin(self.current_round_team_a_list)
-        self.team_a_probs = self.probabilities_df.loc[team_a_mask]['p_win_a'].values
+        team_a_mask = self.probabilities_df["a"].isin(self.current_round_team_a_list)
+        self.team_a_probs = self.probabilities_df.loc[team_a_mask]["p_win_a"].values
 
     @staticmethod
     def simulate_game(team_a, team_b, team_a_prob, rand_val):
@@ -134,7 +131,9 @@ class Bracket:
 
     def store_simulation_results(self):
         for remaining_team in self.remaining_teams:
-            self.simulation_results.append({'team': remaining_team, 'round':self.current_round})
+            self.simulation_results.append(
+                {"team": remaining_team, "round": self.current_round}
+            )
 
     def run_round(self):
         self.check_play_in()
