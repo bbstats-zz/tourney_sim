@@ -1,7 +1,3 @@
-# bracket = [{'E':['1_seed','16_seed','8_seed','9_seed','5_seed','12_seed','4_seed','13_seed','6_seed','11_seed','3_seed','14_seed','7_seed','10_seed','2_seed','15_seed'],
-# ]
-
-# play_in_dict = {16: ('North Carolina','West Virginia')}
 from itertools import permutations
 from typing import List
 import pandas as pd

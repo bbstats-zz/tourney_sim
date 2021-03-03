@@ -67,5 +67,3 @@ def test_create_bracket_no_playin():
     ratings = {team: rating for team, rating in zip(teams, team_ratings)}
     bracket = Bracket(ratings, region_a, region_b, region_c, region_d)
     bracket.run_simulations(num_sims=10)
-    print(bracket.simulation_results)
-    assert bracket == 7
