@@ -1,5 +1,6 @@
-from brackets import Region
-
+from brackets import Region, Bracket
+import numpy as np
+from itertools import permutations
 
 def test_single_playin():
     teams = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]
@@ -35,7 +36,7 @@ def test_multiple_playins():
 
     expected_team_seeds = {
         "A": 1,
-        "Dogs": 16,
+        "Dogs": 16,""
         "Frogs": 16,
         "C": 8,
         "D": 9,
@@ -54,3 +55,17 @@ def test_multiple_playins():
         "West Virginia": 15,
     }
     assert region.team_seeds == expected_team_seeds
+
+
+def test_create_bracket_no_playin():
+    teams = [''.join(p) for p in permutations('abcdefghijklmnopqrstuvwxyz',2)][:64]
+    team_ratings = np.random.normal(0, 16.5, 64)
+    region_a = Region("region_a", teams[:16])
+    region_b = Region("region_b", teams[16:32])
+    region_c = Region("region_c", teams[32:48])
+    region_d = Region("region_d", teams[48:64])
+    ratings = {team: rating for team, rating in zip(teams, team_ratings)}
+    bracket = Bracket(ratings, region_a, region_b, region_c, region_d)
+    bracket.run_simulations(num_sims=10)
+    print(bracket.simulation_results)
+    assert bracket == 7
