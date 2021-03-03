@@ -65,6 +65,8 @@ class Bracket:
     def get_probabilities_df(self):
         # by using permutations we are technically 2x the computational work here
         # but this makes the code much simpler
+        # we use a dataframe for easy mapping and vectorization of scipy.stats.norm
+        
         team_combos = permutations(self.ratings.keys(), 2)
         df = pd.DataFrame(list(team_combos), columns=["a", "b"])
         df["a_rtg"] = df["a"].map(self.ratings)
