@@ -109,6 +109,7 @@ class Bracket:
         )
 
     def get_team_a_probs(self):
+        # TODO THIS IS INCORRECT. YOU NEED TO MAP THIS.
         team_a_mask = self.probabilities_df["a"].isin(self.current_round_team_a_list)
         self.team_a_probs = self.probabilities_df.loc[team_a_mask]["p_win_a"].values
 
