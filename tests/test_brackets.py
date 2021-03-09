@@ -1,6 +1,7 @@
 from brackets import Region, Bracket
 import numpy as np
 from itertools import permutations
+import math
 
 def test_single_playin():
     teams = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"]
@@ -66,4 +67,9 @@ def test_create_bracket_no_playin():
     region_d = Region("region_d", teams[48:64])
     ratings = {team: rating for team, rating in zip(teams, team_ratings)}
     bracket = Bracket(ratings, region_a, region_b, region_c, region_d)
-    bracket.run_simulations(num_sims=10)
+    bracket.run_simulations(num_sims=10000)
+    prob = bracket.probabilities_df.loc[["ab","bc"]]["p_win_a"][0]
+    observed_prob = bracket.output_df.loc[bracket.output_df["team"]=="ab"][2][0]
+    assert math.isclose(prob,observed_prob, abs_tol=0.05)
+
+#test that probabilities match
