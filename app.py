@@ -21,9 +21,6 @@ NEW_COLUMNS = {
 
 st.set_page_config(page_title=apptitle, page_icon=":basketball:", layout="wide",initial_sidebar_state = "expanded")
 
-# st.set_page_config(layout="wide")
-# df.style.format({"E": "{:.2f}"})
-
 
 def formatted_df(df, column_mapping=NEW_COLUMNS):
     df = df.rename(columns=column_mapping)
@@ -50,10 +47,6 @@ def simulate_tourney(num_sims, ratings_type):
     return formatted_df(df)
 
 
-# stable_spr_all, stable_spr_rookies = load_dataframes()
-
-
-# Title the app
 st.title("2021 Lehigh Method NCAA Tournament Cheat Sheet")
 st.write("by Nathan Walker")
 
@@ -78,14 +71,3 @@ if go:
     cm = color_palette("RdYlGn", as_cmap=True)
     display_frame = display_frame.style.background_gradient(cmap=cm, subset=["Winner"])
     st.dataframe(display_frame, width=3000, height=2000)
-
-
-# if select_subset == "All Players":
-#     display_frame = stable_spr_all
-# elif select_subset == "Rookies Only":
-#     display_frame = stable_spr_rookies
-
-
-# cm = color_palette("RdYlGn", as_cmap=True)
-# display_frame = display_frame.style.background_gradient(cmap=cm, subset=['Adj Stable SPR'])
-# st.dataframe(display_frame, width=3000, height=2000)
