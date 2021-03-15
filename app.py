@@ -61,7 +61,7 @@ select_subset = st.sidebar.selectbox(
     "Select Ratings Type:", ["Sports Reference", "The Lehigh Method"]
 )
 
-num_sims = st.sidebar.slider('value', minValue, maxValue)
+num_sims = st.sidebar.slider("Number of Simulations to run:", 1, 20000)
 go = st.sidebar.button("Run Simulations!")
 working = False
 
