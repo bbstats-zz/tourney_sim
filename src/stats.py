@@ -14,7 +14,7 @@ def get_ratings(url=URL):
 
 
 def get_lehigh_method():
-    return pd.read_csv("src/2021_tlm.csv")
+    return pd.read_pickle("src/2021_tlm.p")
 
 
 def main():
