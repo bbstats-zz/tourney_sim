@@ -1,6 +1,6 @@
 import pandas as pd
 import ssl
-from src.constants import URL
+from src.constants import URL, JAKE_TO_BBR
 
 
 def get_ratings(url=URL):
@@ -17,6 +17,12 @@ def get_ratings(url=URL):
 
 def get_lehigh_method():
     return pd.read_pickle("src/2021_tlm.p")
+
+def get_srapm_ratings():
+    df= pd.read_csv('srapm.csv')
+    df = df.loc[df["Season"]=="2020-21"]
+    return df
+
 
 
 def main():

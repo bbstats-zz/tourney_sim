@@ -84,3 +84,43 @@ midwest_teams = [
     "Cleveland State",
 ]
 midwest_playin: Dict = {}
+
+bbr_to_jake = {
+    "UNC": "North Carolina",
+    "Manhattan College": "Manhattan",
+    "St. John's": "St. John's (NY)",
+    "Wichita State": "Wichita St.",
+    "Florida State": "Florida St.",
+    "South Florida": "South Fla.",
+    "Samford University": "Samford",
+    "Iowa State": "Iowa St.",
+    "Ohio State": "Ohio St.",
+    "Oklahoma State": "Oklahoma St.",
+    "University of California, Irvine": "UC Irvine",
+    "Purdue-Fort Wayne": "Purdue Fort Wayne",
+    "Pitt": "Pittsburgh",
+    "Harvard University": "Harvard",
+    "San Diego State": "San Diego St.",
+    "USC": "Southern California",
+    "Michigan State": "Michigan St.",
+    "Georgia State University": "Georgia St.",
+    "Mississippi State": "Mississippi St.",
+    "Oregon State": "Oregon St.",
+    "Rutgers University": "Rutgers",
+    "Arizona State": "Arizona St.",
+    "Penn State": "Penn St.",
+    "UMass": "Massachusetts",
+    "Western Kentucky": "Western Ky.",
+    "University of Northern Iowa": "UNI",
+    "Howard University": "Howard",
+    "Texas A&M-CC": "A&M-Corpus Christi",
+    "Utah State": "Utah St.",
+    "Youngstown State": "Youngstown St.",
+    "Connecticut": "UConn",
+    "Brigham Young": "BYU",
+    "Southern Methodist": "SMU",
+    "Northern Iowa": "UNI",
+    "Stephen F. Austin": "SFA",
+}
+
+JAKE_TO_BBR: {v: k for k, v in bbr_to_jake.items()}
