@@ -19,7 +19,7 @@ def get_lehigh_method():
     return pd.read_pickle("src/2021_tlm.p")
 
 def get_srapm_ratings():
-    df= pd.read_csv('srapm.csv')
+    df= pd.read_csv('src/srapm.csv')
     df = df.loc[df["Season"]=="2020-21"]
     return df
 
