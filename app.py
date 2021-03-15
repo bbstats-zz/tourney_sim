@@ -4,7 +4,7 @@ from seaborn import color_palette
 from simulation import main
 
 # -- Set page config
-apptitle = "2019 Lehigh Method NCAA Tournament Cheat Sheet"
+apptitle = "2021 Lehigh Method NCAA Tournament Cheat Sheet"
 
 
 NEW_COLUMNS = {
@@ -54,7 +54,7 @@ def simulate_tourney(num_sims, ratings_type):
 
 
 # Title the app
-st.title("2019 Lehigh Method NCAA Tournament Cheat Sheet")
+st.title("2021 Lehigh Method NCAA Tournament Cheat Sheet")
 st.write("by Nathan Walker")
 
 
