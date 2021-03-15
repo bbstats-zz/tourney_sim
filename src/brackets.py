@@ -6,7 +6,7 @@ import numpy as np
 import json
 import math
 
-#from line_profiler import profile
+# from line_profiler import profile
 
 
 def store_object_as_json(data, filename):
@@ -46,7 +46,7 @@ class Region:
 
 
 class Bracket:
-    @profile
+    # @profile
     def __init__(self, ratings: Dict, *regions: Region, exp_stdev: float = 16.5):
 
         self.regions = regions
@@ -72,7 +72,7 @@ class Bracket:
         self.current_round_team_b_list: List = []
         self.num_sims = 0
 
-    @profile
+    # @profile
     def get_probabilities_dict(self):
         # by using permutations we are technically 2x the computational work here
         # but this makes the code much simpler
@@ -89,9 +89,8 @@ class Bracket:
         df["p_win_b"] = 1 - df["p_win_a"]
         df.set_index(["a", "b"], inplace=True)
         self.probabilities_dict = dict(zip(df.index.values, df["p_win_a"].values))
-        #print(self.probabilities_dict)
 
-    @profile
+    # @profile
     def run_simulations(self, num_sims=100):
         self.num_sims = num_sims
         self.simulation_results = []
@@ -103,15 +102,15 @@ class Bracket:
                 self.run_round()
         self.sim_results_to_df_and_store()
 
-    @profile
+    # @profile
     def store_initial_round(self):
         self.store_simulation_results(initial_round=True)
 
-    @profile
+    # @profile
     def check_play_in(self):
         self.current_round_is_play_in = self.current_round == 1 and self.play_in
 
-    @profile
+    # @profile
     def set_current_matchups(self):
         if self.current_round == 1:
             if self.play_in:
@@ -127,24 +126,26 @@ class Bracket:
             self.current_round_team_a_list, self.current_round_team_b_list
         )
 
-    @profile
+    # @profile
     def generate_simulation_seed(self):
         self.simulation_values = np.random.uniform(
             size=int(len(self.current_matchups) / 2)
         )
 
-    @profile
+    # @profile
     def get_team_a_probs(self):
-        self.team_a_probs = [self.probabilities_dict[(a,b)] for a,b in self.combined_current_matchups]
+        self.team_a_probs = [
+            self.probabilities_dict[(a, b)] for a, b in self.combined_current_matchups
+        ]
 
     @staticmethod
-    @profile
+    # @profile
     def simulate_game(team_a, team_b, team_a_prob, rand_val):
         # why waste a function call on this?
         # this gives us flexibility to try different things in our simulation
         return team_a if rand_val <= team_a_prob else team_b
 
-    @profile
+    # @profile
     def get_winners(self):
         self.remaining_teams = [
             self.simulate_game(team_a, team_b, team_a_prob, rand_val)
@@ -156,7 +157,7 @@ class Bracket:
             )
         ]
 
-    @profile
+    # @profile
     def store_simulation_results(self, initial_round=False):
         teams_to_use = self.teams if initial_round else self.remaining_teams
         for team in teams_to_use:
@@ -164,11 +165,11 @@ class Bracket:
                 {"team": team, "round": self.current_round, "sim_id": self.sim_id}
             )
 
-    @profile
+    # @profile
     def increment_current_round(self):
         self.current_round += 1
 
-    @profile
+    # @profile
     def run_round(self):
         self.check_play_in()
         self.set_current_matchups()
@@ -179,7 +180,7 @@ class Bracket:
         self.increment_current_round()
         self.store_simulation_results()
 
-    @profile
+    # @profile
     def sim_results_to_df_and_store(self):
         # store_object_as_json(self.simulation_results, "sim_results.json")
         full_results = pd.DataFrame(self.simulation_results)
@@ -194,7 +195,7 @@ class Bracket:
         self.output_df.to_csv("test_csv.csv", index=False)
 
 
-@profile
+# @profile
 def main():
     teams = ["".join(p) for p in permutations("abcdefghijklmnopqrstuvwxyz", 2)][:64]
     team_ratings = np.random.normal(0, 16.5, 64)
@@ -204,11 +205,13 @@ def main():
     region_d = Region("region_d", teams[48:64])
     ratings = {team: rating for team, rating in zip(teams, team_ratings)}
     bracket = Bracket(ratings, region_a, region_b, region_c, region_d)
-    bracket.run_simulations(num_sims=1000000)
-    #prob = bracket.probabilities_dict[("ab", "bc")]
-    #observed_prob = bracket.output_df.loc[bracket.output_df["team"] == "ab"][2][0]
-    #print(prob, observed_prob)
-    #assert math.isclose(prob, observed_prob, abs_tol=0.05)
+    bracket.run_simulations(num_sims=20000)
+    # prob = bracket.probabilities_dict[("ab", "bc")]
+    print(bracket.probabilities_dict)
+    print(bracket.output_df)
+    # observed_prob = bracket.output_df.loc[bracket.output_df["team"] == "ab"][2][0]
+    # print(prob, observed_prob)
+    # assert math.isclose(prob, observed_prob, abs_tol=0.05)
 
 
 if __name__ == "__main__":
