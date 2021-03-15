@@ -19,7 +19,7 @@ NEW_COLUMNS = {
     "team": "Team",
 }
 
-st.set_page_config(page_title=apptitle, page_icon=":basketball:", layout="wide")
+st.set_page_config(page_title=apptitle, page_icon=":basketball:", layout="wide",initial_sidebar_state = "expanded")
 
 # st.set_page_config(layout="wide")
 # df.style.format({"E": "{:.2f}"})
@@ -41,6 +41,7 @@ def formatted_df(df, column_mapping=NEW_COLUMNS):
         ]
     ]
     df = df.sort_values("Simulated # Wins", ascending=False)
+    df.set_index("Team",inplace=True, drop=True)
     return df
 
 
