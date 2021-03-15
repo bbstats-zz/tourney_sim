@@ -123,4 +123,4 @@ bbr_to_jake = {
     "Stephen F. Austin": "SFA",
 }
 
-JAKE_TO_BBR: {v: k for k, v in bbr_to_jake.items()}
+JAKE_TO_BBR= {v: k for k, v in bbr_to_jake.items()}
