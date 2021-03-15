@@ -5,6 +5,9 @@ import scipy.stats
 import numpy as np
 import json
 import math
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
 from src.constants import SEEDS
 
 # from line_profiler import profile
