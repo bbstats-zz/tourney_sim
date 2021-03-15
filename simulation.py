@@ -1,52 +1,32 @@
 from src.brackets import Region, Bracket
-from src.stats import get_ratings
-
-west = [
-    "Gonzaga",
-    "Oklahoma",
-    "Missouri",
-    "Creighton",
-    "UC-Santa Barbara",
-    "Virginia",
-    "Ohio",
-    "USC",
-    "Kansas",
-    "Eastern Washington",
-    "Oregon",
-    "Virginia Commonwealth",
-    "Iowa",
-    "Grand Canyon",
-]
-west_playin = {
-    16: ["Norfolk State", "Appalachian State"],
-    11: ["Wichita State", "Drake"],
-}
-
-east = [
-    "Michigan",
-    "Louisiana State",
-    "St. Bonaventure",
-    "Colorado",
-    "Georgetown",
-    "Florida State",
-    "UNC Greensboro",
-    "BYU",
-    "Texas",
-    "Abilene Christian",
-    "Connecticut",
-    "Maryland",
-    "Alabama",
-    "Iona",
-]
-east_playin = {
-    16: ["Mount St. Mary's", "Texas Southern"],
-    11: ["Michigan State", "UCLA"],
-}
-south =
-# south_playin =
-# midwest =
-# midwest_playin =
+from src.stats import get_ratings, get_lehigh_method
+from src.constants import (
+    west_teams,
+    west_playin,
+    east_teams,
+    east_playin,
+    south_teams,
+    south_playin,
+    midwest_teams,
+    midwest_playin,
+)
 
 
-if __name__ == "__main__":
-    ratings = get_ratings()
+def main(num_sims=1000, select_subset="Sports Reference"):
+    if select_subset == "The Lehigh Method":
+        ratings_df = get_lehigh_method()
+        ratings = dict(zip(ratings_df["School"], ratings_df["TLM_NetRtg"]))
+    else:
+        ratings_df = get_ratings()
+        ratings = dict(zip(ratings_df["School"], ratings_df["NRtg"]))
+
+    west = Region("W", west_teams, west_playin)
+    east = Region("W", east_teams, east_playin)
+    south = Region("W", south_teams, south_playin)
+    midwest = Region("W", midwest_teams, midwest_playin)
+    bracket = Bracket(ratings, west, east, south, midwest)
+    bracket.run_simulations(num_sims=num_sims)
+    return bracket.output_df
+    #bracket.output_df.to_csv("output.csv")
+
+

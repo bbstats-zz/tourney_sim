@@ -5,6 +5,7 @@ import scipy.stats
 import numpy as np
 import json
 import math
+from src.constants import SEEDS
 
 # from line_profiler import profile
 
@@ -23,10 +24,10 @@ class Region:
         self.region_name = region_name
         self.bid_teams = bid_teams
         self.play_in_dict = play_in_dict
-        self.seeds = [1, 16, 8, 9, 5, 12, 4, 13, 6, 11, 3, 14, 7, 10, 2, 15]
+        self.seeds = SEEDS
         self.play_in_seeds = list(self.play_in_dict.keys())
         self.play_in_teams = flatten(list(self.play_in_dict.values()))
-        self.teams = self.bid_teams + self.play_in_teams
+        # self.teams = self.bid_teams + self.play_in_teams
         self.seed_teams()
 
     def seed_teams(self):
@@ -34,15 +35,19 @@ class Region:
         and play-in dictionary and make a dictionary of all team:seed combos."""
         self.team_seeds = {}
         team_idx = 0
+        self.teams = []
         for seed in self.seeds:
             if seed in self.play_in_seeds:
                 team_a, team_b = self.play_in_dict[seed]
                 self.team_seeds[team_a] = seed
                 self.team_seeds[team_b] = seed
+                self.teams.append(team_a)
+                self.teams.append(team_b)
             else:
                 team = self.bid_teams[team_idx]
                 self.team_seeds[team] = seed
                 team_idx += 1
+                self.teams.append(team)
 
 
 class Bracket:
@@ -61,10 +66,13 @@ class Bracket:
         self.get_probabilities_dict()
 
         self.play_in_matchups = flatten([region.play_in_teams for region in regions])
+        self.non_play_in_teams = [
+            team for team in self.teams if team not in self.play_in_matchups
+        ]
         self.play_in = len(self.play_in_matchups) > 0
 
         self.n_rounds = int(np.log2(len(self.teams))) + self.play_in
-        print(f"rounds: {self.n_rounds}")
+        # print(f"rounds: {self.n_rounds}")
 
         self.current_round = None
         self.current_round_is_play_in = False
@@ -97,12 +105,21 @@ class Bracket:
         for sim in range(self.num_sims):
             self.sim_id = sim
             self.current_round = 1
-            self.store_initial_round()
+            # self.store_initial_round()
             while self.current_round <= self.n_rounds:
                 self.run_round()
         self.sim_results_to_df_and_store()
 
+    def merge_playin_winners_with_ro64(self):
+        play_in_losers = [
+            team for team in self.play_in_matchups if team not in self.remaining_teams
+        ]
+        self.remaining_teams = [
+            team for team in self.teams if team not in play_in_losers
+        ]
+
     # @profile
+
     def store_initial_round(self):
         self.store_simulation_results(initial_round=True)
 
@@ -111,7 +128,21 @@ class Bracket:
         self.current_round_is_play_in = self.current_round == 1 and self.play_in
 
     # @profile
+
+    def merge_playin_winners_with_ro64_bracket(self):
+        # remove the losers and then run the round
+        play_in_losers = [
+            team for team in self.play_in_matchups if team not in self.remaining_teams
+        ]
+        self.remaining_teams = [
+            team for team in self.teams if team not in play_in_losers
+        ]
+
     def set_current_matchups(self):
+
+        if self.current_round == 2 and self.play_in:
+            self.merge_playin_winners_with_ro64_bracket()
+
         if self.current_round == 1:
             if self.play_in:
                 self.current_matchups = self.play_in_matchups
@@ -138,11 +169,12 @@ class Bracket:
             self.probabilities_dict[(a, b)] for a, b in self.combined_current_matchups
         ]
 
-    @staticmethod
+    # @staticmethod
     # @profile
-    def simulate_game(team_a, team_b, team_a_prob, rand_val):
+    def simulate_game(self, team_a, team_b, team_a_prob, rand_val):
         # why waste a function call on this?
         # this gives us flexibility to try different things in our simulation
+        # print(f"Round{self.current_round}: {team_a} vs {team_b}")
         return team_a if rand_val <= team_a_prob else team_b
 
     # @profile
@@ -160,6 +192,8 @@ class Bracket:
     # @profile
     def store_simulation_results(self, initial_round=False):
         teams_to_use = self.teams if initial_round else self.remaining_teams
+        if self.current_round_is_play_in:
+            teams_to_use += self.non_play_in_teams
         for team in teams_to_use:
             self.simulation_results.append(
                 {"team": team, "round": self.current_round, "sim_id": self.sim_id}
@@ -177,12 +211,12 @@ class Bracket:
         self.generate_simulation_seed()
         self.get_team_a_probs()
         self.get_winners()
-        self.increment_current_round()
         self.store_simulation_results()
+        self.increment_current_round()
 
     # @profile
     def sim_results_to_df_and_store(self):
-        # store_object_as_json(self.simulation_results, "sim_results.json")
+        #store_object_as_json(self.simulation_results, "sim_results.json")
         full_results = pd.DataFrame(self.simulation_results)
 
         count_by_round = full_results.groupby(["team", "round"]).count().reset_index()
@@ -192,7 +226,35 @@ class Bracket:
         ).fillna(0)
         count_by_round = count_by_round / self.num_sims
         self.output_df = count_by_round.reset_index()
-        self.output_df.to_csv("test_csv.csv", index=False)
+        self.output_df.columns = self.output_df.columns.astype(str)
+        self.run_analysis()
+        #self.output_df.to_csv("test_csv.csv", index=False)
+
+    @staticmethod
+    def get_volatility(data):
+        first_round = data.iloc[:, 0]
+
+    def run_analysis(self):
+        total_proj_wins = self.output_df[["2","3", "4", "5", "6", "7"]].sum(axis=1)
+        self.output_df["total_proj_wins"] = total_proj_wins
+        for i, vol in enumerate(range(2, 7)):
+
+            wins = vol - 1
+
+            round_in_question = self.output_df[str(vol)]
+
+            sum_future_rounds = self.output_df[
+                [str(rnd) for rnd in range(vol+1, 8)]
+            ].sum(axis=1)
+
+            self.output_df[str(vol) + "_volatility"] = (
+                (sum_future_rounds / round_in_question) - total_proj_wins + wins
+            ) * round_in_question
+
+        self.output_df["total_volatility"] = self.output_df[[col for col in self.output_df.columns if "_volatility" in col]].sum(axis=1)
+        self.output_df["volatility_ration"]=self.output_df["total_volatility"]/self.output_df["total_proj_wins"]
+        self.output_df = self.output_df.fillna(0)
+
 
 
 # @profile
@@ -205,7 +267,7 @@ def main():
     region_d = Region("region_d", teams[48:64])
     ratings = {team: rating for team, rating in zip(teams, team_ratings)}
     bracket = Bracket(ratings, region_a, region_b, region_c, region_d)
-    bracket.run_simulations(num_sims=20000)
+    bracket.run_simulations(num_sims=10)
     # prob = bracket.probabilities_dict[("ab", "bc")]
     print(bracket.probabilities_dict)
     print(bracket.output_df)

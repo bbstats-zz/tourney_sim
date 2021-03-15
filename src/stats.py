@@ -1,9 +1,6 @@
 import pandas as pd
 import ssl
-
-
-YEAR = "2021"
-URL = f"https://www.sports-reference.com/cbb/seasons/{YEAR}-ratings.html"
+from src.constants import URL
 
 
 def get_ratings(url=URL):
@@ -14,6 +11,10 @@ def get_ratings(url=URL):
     df = df.apply(pd.to_numeric, errors="ignore")
     df = df[[col for col in df.columns if "Unnamed: " not in col]]
     return df
+
+
+def get_lehigh_method():
+    return pd.read_csv("src/2021_tlm.csv")
 
 
 def main():
