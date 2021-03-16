@@ -91,7 +91,9 @@ def simulate_tourney(num_sims, ratings_type):
 
 st.title("2021 Lehigh Method NCAA Tournament Cheat Sheet")
 st.write("by Nathan Walker")
-
+slot1 = st.empty()
+slot2 = st.empty()
+st.image('src/dukesucks.png')
 
 select_subset = st.sidebar.selectbox(
     "Select Ratings Type:",
@@ -116,5 +118,5 @@ if go:
         display_frame.data.reset_index(drop=False), num_sims, select_subset
     )
 
-    st.markdown(link, unsafe_allow_html=True)
-    st.dataframe(display_frame, width=3000, height=2000)
+    slot1.markdown(link, unsafe_allow_html=True)
+    slot2.dataframe(display_frame, width=3000, height=2000)
