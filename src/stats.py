@@ -21,6 +21,7 @@ def get_lehigh_method():
 def get_srapm_ratings():
     df= pd.read_csv('src/srapm.csv')
     df = df.loc[df["Season"]=="2020-21"]
+    df["Team"]=df["Team"].map(lambda x: JAKE_TO_BBR.get(x, x))
     return df
 
 

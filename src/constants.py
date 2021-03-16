@@ -121,6 +121,8 @@ bbr_to_jake = {
     "Southern Methodist": "SMU",
     "Northern Iowa": "UNI",
     "Stephen F. Austin": "SFA",
+    "Appalachian State":"Appalachian St.",
+    "Norfolk State":"Norfolk St."
 }
 
 JAKE_TO_BBR= {v: k for k, v in bbr_to_jake.items()}
