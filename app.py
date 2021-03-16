@@ -99,7 +99,7 @@ select_subset = st.sidebar.selectbox(
         "The Lehigh Method",
         "538",
         "Sports Reference",
-    ],  # , "Flancer sRAPM (Minutes = Average)"]
+    ], index=1 # , "Flancer sRAPM (Minutes = Average)"]
 )
 
 num_sims = st.sidebar.slider(
