@@ -57,7 +57,7 @@ st.write("by Nathan Walker")
 
 
 select_subset = st.sidebar.selectbox(
-    "Select Ratings Type:", ["Sports Reference", "The Lehigh Method"]#, "Flancer sRAPM (Minutes = Average)"]
+    "Select Ratings Type:", ["Sports Reference", "The Lehigh Method", "538"]#, "Flancer sRAPM (Minutes = Average)"]
 )
 
 num_sims = st.sidebar.slider("Number of Simulations to run:", 1, 20000)

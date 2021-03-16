@@ -233,9 +233,6 @@ class Bracket:
         self.run_analysis()
         #self.output_df.to_csv("test_csv.csv", index=False)
 
-    @staticmethod
-    def get_volatility(data):
-        first_round = data.iloc[:, 0]
 
     def run_analysis(self):
         total_proj_wins = self.output_df[["2","3", "4", "5", "6", "7"]].sum(axis=1)

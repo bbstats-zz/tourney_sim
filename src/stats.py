@@ -25,6 +25,9 @@ def get_srapm_ratings():
     return df
 
 
+def get_fivethirtyeight():
+    return pd.read_csv("src/fivethirtyeight.csv")
+
 
 def main():
     df = get_ratings()
