@@ -18,7 +18,7 @@ NEW_COLUMNS = {
     "6": "Championship",
     "7": "Winner",
     "total_proj_wins": "Simulated # Wins",
-    "total_volatility": "Volatility",
+    "true_volatility": "Volatility",
     "team": "Team",
 }
 

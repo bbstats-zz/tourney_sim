@@ -4,8 +4,11 @@ import pandas as pd
 import scipy.stats
 import numpy as np
 import json
-import math
 import sys, os
+from statsmodels import api as sm
+
+
+
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../')
 from src.constants import SEEDS
@@ -253,8 +256,16 @@ class Bracket:
 
         self.output_df["total_volatility"] = self.output_df[[col for col in self.output_df.columns if "_volatility" in col]].sum(axis=1)
         self.output_df["volatility_ration"]=self.output_df["total_volatility"]/self.output_df["total_proj_wins"]
+        self.output_df["exp_volatility"]=self.interpolate_lowess(self.output_df["total_proj_wins"], self.output_df["total_volatility"])
+        self.output_df["true_volatility"]=self.output_df["total_volatility"]-self.output_df["exp_volatility"]
         self.output_df = self.output_df.fillna(0)
-
+        
+    @staticmethod
+    def interpolate_lowess(x, y):
+        print(x)
+        print(y)
+        lowess = sm.nonparametric.lowess(y,x,frac=0.7)
+        return np.interp(x, lowess[:,0], lowess[:,1])
 
 
 # @profile
