@@ -1,5 +1,26 @@
 from typing import Dict
 
+ESPN_SCORES = [10, 20, 40, 80, 160, 320]
+
+AVG_SEED_WINS = {
+    1: 3.36,
+    2: 2.43,
+    3: 1.79,
+    4: 1.52,
+    5: 1.17,
+    6: 1.26,
+    7: 0.87,
+    8: 0.67,
+    9: 0.59,
+    10: 0.63,
+    11: 0.5,
+    12: 0.48,
+    13: 0.24,
+    14: 0.18,
+    15: 0.04,
+    16: 0,
+}
+
 SEEDS = [1, 16, 8, 9, 5, 12, 4, 13, 6, 11, 3, 14, 7, 10, 2, 15]
 
 YEAR = "2021"
@@ -85,6 +106,17 @@ midwest_teams = [
 ]
 midwest_playin: Dict = {}
 
+TOURNEY_TEAMS = (
+    east_teams
+    + west_teams
+    + south_teams
+    + midwest_teams
+    + west_playin[16]
+    + west_playin[11]
+    + east_playin[16]
+    + east_playin[11]
+)
+
 bbr_to_jake = {
     "UNC": "North Carolina",
     "Manhattan College": "Manhattan",
@@ -121,8 +153,8 @@ bbr_to_jake = {
     "Southern Methodist": "SMU",
     "Northern Iowa": "UNI",
     "Stephen F. Austin": "SFA",
-    "Appalachian State":"Appalachian St.",
-    "Norfolk State":"Norfolk St."
+    "Appalachian State": "Appalachian St.",
+    "Norfolk State": "Norfolk St.",
 }
 
-JAKE_TO_BBR= {v: k for k, v in bbr_to_jake.items()}
+JAKE_TO_BBR = {v: k for k, v in bbr_to_jake.items()}

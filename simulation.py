@@ -30,14 +30,14 @@ def main(num_sims=1000, select_subset="Sports Reference"):
         ratings_df = get_fivethirtyeight()
         ratings = dict(zip(ratings_df["team"], ratings_df["rating"]))
 
-    elif select_subset == "Flancer sRAPM (Minutes = Average)":
+    elif select_subset == "Flancer sRAPM":
         ratings_df = get_srapm_ratings()
-        ratings = dict(zip(ratings_df["Team"], ratings_df["RAPM"]))
+        ratings = dict(zip(ratings_df["School"], ratings_df["RAPM"]))
 
     west = Region("W", west_teams, west_playin)
-    east = Region("W", east_teams, east_playin)
-    south = Region("W", south_teams, south_playin)
-    midwest = Region("W", midwest_teams, midwest_playin)
+    east = Region("E", east_teams, east_playin)
+    south = Region("S", south_teams, south_playin)
+    midwest = Region("MW", midwest_teams, midwest_playin)
     bracket = Bracket(ratings, west, east, south, midwest)
     bracket.run_simulations(num_sims=num_sims)
     return bracket.output_df

@@ -5,11 +5,13 @@ from simulation import main
 import base64
 from io import BytesIO
 from datetime import datetime
+from pandas.io.formats.style import Styler
 
 # -- Set page config
 apptitle = "2021 Lehigh Method NCAA Tournament Cheat Sheet"
 
 CM = color_palette("RdYlGn", as_cmap=True)
+HOT = color_palette("YlOrRd", as_cmap=True)
 NEW_COLUMNS = {
     "2": "Ro32",
     "3": "Sweet16",
@@ -20,6 +22,7 @@ NEW_COLUMNS = {
     "total_proj_wins": "Simulated # Wins",
     "true_volatility": "Volatility",
     "team": "Team",
+    "region": "Region",
 }
 
 st.set_page_config(
@@ -54,6 +57,7 @@ def formatted_df(df, column_mapping=NEW_COLUMNS):
     df.rename(columns=column_mapping, inplace=True)
     df = df[
         [
+            "Region",
             "Team",
             "Ro32",
             "Sweet16",
@@ -75,15 +79,19 @@ def formatted_df(df, column_mapping=NEW_COLUMNS):
         "Final4": "{:,.1%}",
         "Championship": "{:,.1%}",
         "Winner": "{:,.1%}",
-        "Simulated # Wins": "{:,.1f}",
+        "Simulated # Wins": "{:,.2f}",
         "Volatility": "{:,.1f}",
     }
 
-    dsmok_style = df.style.background_gradient(cmap=CM, subset=["Winner"])
-    rounding_style = df.style.format(rounding_formatting)
-    return rounding_style.use(dsmok_style.export())
+    s = (
+        df.style.background_gradient(cmap=CM, subset=["Winner", "Simulated # Wins"])
+        .background_gradient(cmap=HOT, subset=["Volatility"])
+        .format(rounding_formatting)
+    )
+    return s
 
 
+@st.cache
 def simulate_tourney(num_sims, ratings_type):
     df = main(num_sims, ratings_type)
     return df
@@ -93,15 +101,17 @@ st.title("2021 Lehigh Method NCAA Tournament Cheat Sheet")
 st.write("by Nathan Walker")
 slot1 = st.empty()
 slot2 = st.empty()
-st.image('src/dukesucks.png')
+st.image("src/dukesucks.png")
 
 select_subset = st.sidebar.selectbox(
     "Select Ratings Type:",
     [
         "The Lehigh Method",
         "538",
+        "Flancer sRAPM",
         "Sports Reference",
-    ], index=1 # , "Flancer sRAPM (Minutes = Average)"]
+    ],
+    index=1,  # , "Flancer sRAPM (Minutes = Average)"]
 )
 
 num_sims = st.sidebar.slider(

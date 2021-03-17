@@ -6,11 +6,11 @@ import numpy as np
 import json
 import sys, os
 from statsmodels import api as sm
-
+from src.constants import ESPN_SCORES
 
 
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../')
+sys.path.insert(0, myPath + "/../")
 from src.constants import SEEDS
 
 # from line_profiler import profile
@@ -58,15 +58,20 @@ class Region:
 
 class Bracket:
     # @profile
-    def __init__(self, ratings: Dict, *regions: Region, exp_stdev: float = 16.5):
+    def __init__(self, ratings: Dict, *regions: Region, exp_stdev: float = 16):
 
         self.regions = regions
         self.ratings = ratings
         self.exp_stdev = exp_stdev
 
         self.teams = []
+        self.team_regions = {}
+
         for region in self.regions:
             self.teams += region.teams
+            for team in region.teams:
+                self.team_regions[team] = region.region_name
+
         self.remaining_teams = self.teams
 
         self.get_probabilities_dict()
@@ -222,7 +227,7 @@ class Bracket:
 
     # @profile
     def sim_results_to_df_and_store(self):
-        #store_object_as_json(self.simulation_results, "sim_results.json")
+        # store_object_as_json(self.simulation_results, "sim_results.json")
         full_results = pd.DataFrame(self.simulation_results)
 
         count_by_round = full_results.groupby(["team", "round"]).count().reset_index()
@@ -233,13 +238,25 @@ class Bracket:
         count_by_round = count_by_round / self.num_sims
         self.output_df = count_by_round.reset_index()
         self.output_df.columns = self.output_df.columns.astype(str)
+        self.output_df["region"]=self.output_df["team"].map(self.team_regions)
         self.run_analysis()
-        #self.output_df.to_csv("test_csv.csv", index=False)
-
+        # self.output_df.to_csv("test_csv.csv", index=False)
 
     def run_analysis(self):
-        total_proj_wins = self.output_df[["2","3", "4", "5", "6", "7"]].sum(axis=1)
-        self.output_df["total_proj_wins"] = total_proj_wins
+        self.calculate_total_wins()
+        self.calculate_volatility()
+        self.output_df = self.output_df.fillna(0)
+        # self.calculate_roi()
+        # self.calculate_pase()
+
+    def calculate_total_wins(self):
+        self.total_proj_wins = self.output_df[["2", "3", "4", "5", "6", "7"]].sum(
+            axis=1
+        )
+        self.output_df["total_proj_wins"] = self.total_proj_wins
+
+    def calculate_volatility(self):
+
         for i, vol in enumerate(range(2, 7)):
 
             wins = vol - 1
@@ -247,25 +264,44 @@ class Bracket:
             round_in_question = self.output_df[str(vol)]
 
             sum_future_rounds = self.output_df[
-                [str(rnd) for rnd in range(vol+1, 8)]
+                [str(rnd) for rnd in range(vol + 1, 8)]
             ].sum(axis=1)
 
             self.output_df[str(vol) + "_volatility"] = (
-                (sum_future_rounds / round_in_question) - total_proj_wins + wins
+                (sum_future_rounds / round_in_question) - self.total_proj_wins + wins
             ) * round_in_question
 
-        self.output_df["total_volatility"] = self.output_df[[col for col in self.output_df.columns if "_volatility" in col]].sum(axis=1)
-        self.output_df["volatility_ration"]=self.output_df["total_volatility"]/self.output_df["total_proj_wins"]
-        self.output_df["exp_volatility"]=self.interpolate_lowess(self.output_df["total_proj_wins"], self.output_df["total_volatility"])
-        self.output_df["true_volatility"]=self.output_df["total_volatility"]-self.output_df["exp_volatility"]
-        self.output_df = self.output_df.fillna(0)
-        
+        self.output_df["total_volatility"] = self.output_df[
+            [col for col in self.output_df.columns if "_volatility" in col]
+        ].sum(axis=1)
+
+        self.output_df["volatility_ratio"] = (
+            self.output_df["total_volatility"] / self.output_df["total_proj_wins"]
+        )
+
+        self.output_df["exp_volatility"] = self.interpolate_lowess(
+            self.output_df["total_proj_wins"], self.output_df["total_volatility"]
+        )
+
+        self.output_df["true_volatility"] = (
+            self.output_df["total_volatility"] - self.output_df["exp_volatility"]
+        )
+
+    def calculate_roi(self):
+        wpw_df = pd.read_csv("src/wpw.csv")
+
+        self.output_df[["2_roi", "3_roi", "4_roi", "5_roi", "6_roi", "7_roi"]] = (
+            self.output_df[["2", "3", "4", "5", "6", "7"]] - wpw_df[[2, 3, 4, 5, 6, 7]]
+        ).multiply(ESPN_SCORES, axis=0)
+
+    def calculate_pase(self):
+        # need to get seeds first
+        pass
+
     @staticmethod
     def interpolate_lowess(x, y):
-        print(x)
-        print(y)
-        lowess = sm.nonparametric.lowess(y,x,frac=0.7)
-        return np.interp(x, lowess[:,0], lowess[:,1])
+        lowess = sm.nonparametric.lowess(y, x, frac=0.7)
+        return np.interp(x, lowess[:, 0], lowess[:, 1])
 
 
 # @profile
