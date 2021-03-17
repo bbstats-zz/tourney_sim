@@ -248,6 +248,8 @@ class Bracket:
         self.output_df = self.output_df.fillna(0)
         # self.calculate_roi()
         # self.calculate_pase()
+        # self.calculate_sleeper_rating()
+        # Sleeper rating = volatility * 1/3 + pase * 1/6 + espn roi * 1/6 + 1/3 * number of wins
 
     def calculate_total_wins(self):
         self.total_proj_wins = self.output_df[["2", "3", "4", "5", "6", "7"]].sum(
