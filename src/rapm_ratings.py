@@ -73,11 +73,15 @@ class AdjustedLehighRatings:
         self.player_ratings["min_pct_adj"]=self.player_ratings["min_pct_adj"].clip(upper=1)
         self.redistribute_minutes(minutes_col="min_pct_adj")
 
-        while self.max_min_pct >= 1:
-            self.max_
+        while self.max_min_pct > 1:
+            self.redistribute_minutes(minutes_col="min_pct_adj")
 
     def redistribute_minutes(self, minutes_col):
-        
+        #sum the team minutes
+        #look at teams whose minutes are < 5
+        #all players who do not = 1 get remainder of minutes
+        #teams_to_chck
+
 
 
 
