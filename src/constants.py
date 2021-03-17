@@ -1,5 +1,59 @@
 from typing import Dict
 
+# data via Jake Flancer: https://github.com/jflancer/march_madness/blob/master/short_model.R
+
+INJURIES = {
+    # For now opting to keep in all questionable players, closer to gametime consider changing (just uncomment)
+    # "Josh Primo_Alabama", # Questionable
+    # "RJ Cole_UConn", #Questionable
+    # "J'Wan Roberts_Houston", #Questionable
+    # "Jalen Wilson_Kansas", #Doubtful (COVID)
+    # "Kyle Young_Ohio St.", #Questionable
+    # "Ethan Morton_Purdue", #Questionable
+    # "Isaiah Poor Bear-Chandler_Wichita St.", #Questionable
+    # "Jaden Seymour_Wichita St.", #Questionable
+    # "Trevin Wade_Wichita St.", #Questionable
+    # "Shereef Mitchell_Creighton", #Questionable
+
+    "Arkansas": ["Jaylin Williams", "Khalen Robinson"],
+    "Drake": ["Roman Penn", "ShanQuan Hemphill"],
+    "Florida": ["Keyontae Johnson"],
+    "Georgetown": ["Jalen Harris"],
+    "Houston": ["Caleb Mills"],
+    "Iowa": ["Jack Nunge"],
+    "Kansas": ["David McCormack", "Tristan Enaruna"],
+    "Louisiana Tech": ["Jace Bass"],
+    "Michigan": ["Isaiah Livers"],
+    "North Carolina": ["Puff Johnson"],
+    "North Texas": ["Rubin Jones"],
+    "Ohio State": ["Jimmy Sotos"],
+    "Oklahoma State": [
+        "Chris Harris Jr.",
+        "Donovan Williams",
+    ],
+    "Oregon": ["N'Faly Dante"],
+    "Saint Bonaventure": ["Anthony Roberts"],
+    "Syracuse": [
+        "Bourama Sidibe",
+        "Frank Anselem",
+    ],
+    "Tennessee": ["John Fulkerson"],
+    "Texas Tech": [
+        "Jamarius Burton",
+        "Joel Ntambwe",
+    ],
+    "UCLA": [
+        "Chris Smith",
+        "Jalen Hill",
+    ],
+    "Virginia Commonwealth": ["Keshawn Curry"],
+    "Villanova": ["Collin Gillespie"],
+    "Virginia Tech": [
+        "Jalen Cone",
+        "Cartier Diarra",
+    ],
+}
+
 ESPN_SCORES = [10, 20, 40, 80, 160, 320]
 
 AVG_SEED_WINS = {
