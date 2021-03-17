@@ -4,6 +4,7 @@ from src.stats import (
     get_lehigh_method,
     get_srapm_ratings,
     get_fivethirtyeight,
+    get_adjusted_lehigh_method
 )
 from src.constants import (
     west_teams,
@@ -19,8 +20,8 @@ from src.constants import (
 
 def main(num_sims=1000, select_subset="Sports Reference"):
     if select_subset == "The Lehigh Method":
-        ratings_df = get_lehigh_method()
-        ratings = dict(zip(ratings_df["School"], ratings_df["TLM_NetRtg"]))
+        ratings_df = get_adjusted_lehigh_method()
+        ratings = dict(zip(ratings_df["Team"], ratings_df["RAPM"]))
 
     elif select_subset == "Sports Reference":
         ratings_df = get_ratings()

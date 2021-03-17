@@ -22,7 +22,7 @@ INJURIES = {
     "Houston": ["Caleb Mills"],
     "Iowa": ["Jack Nunge"],
     "Kansas": ["David McCormack", "Tristan Enaruna"],
-    "Louisiana Tech": ["Jace Bass"],
+    #"Louisiana Tech": ["Jace Bass"],
     "Michigan": ["Isaiah Livers"],
     "North Carolina": ["Puff Johnson"],
     "North Texas": ["Rubin Jones"],
@@ -32,7 +32,7 @@ INJURIES = {
         "Donovan Williams",
     ],
     "Oregon": ["N'Faly Dante"],
-    "Saint Bonaventure": ["Anthony Roberts"],
+    "St. Bonaventure": ["Anthony Roberts"],
     "Syracuse": [
         "Bourama Sidibe",
         "Frank Anselem",

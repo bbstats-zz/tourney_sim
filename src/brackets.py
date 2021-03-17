@@ -58,7 +58,7 @@ class Region:
 
 class Bracket:
     # @profile
-    def __init__(self, ratings: Dict, *regions: Region, exp_stdev: float = 16):
+    def __init__(self, ratings: Dict, *regions: Region, exp_stdev: float = 16.5):
 
         self.regions = regions
         self.ratings = ratings

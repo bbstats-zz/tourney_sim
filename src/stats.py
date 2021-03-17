@@ -43,10 +43,13 @@ def get_lehigh_method():
     df = pd.read_pickle("src/2021_tlm.p")
     return steal_ratings(df.loc[df["School"].isin(TOURNEY_TEAMS)], "TLM_NetRtg")
 
+def get_adjusted_lehigh_method():
+    df = pd.read_csv("src/adjusted_lehigh_ratings.csv")
+    return steal_ratings(df, "RAPM")
 
 def get_srapm_ratings():
     df = pd.read_csv("src/srapm.csv")
-    df = df.loc[(df["Season"] == "2020-21") & df["School"].isin(TOURNEY_TEAMS)]
+    df = df.loc[(df["Season"] == "2020-21") & df["Team"].isin(TOURNEY_TEAMS)]
     return steal_ratings(df, "RAPM")
 
 
