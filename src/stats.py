@@ -41,21 +41,25 @@ def get_ratings(url=URL):
 
 def get_lehigh_method():
     df = pd.read_pickle("src/2021_tlm.p")
-    return steal_ratings(df.loc[df["School"].isin(TOURNEY_TEAMS)], "TLM_NetRtg")
+    #return steal_ratings(df.loc[df["School"].isin(TOURNEY_TEAMS)], "TLM_NetRtg")
+    return df.loc[df["School"].isin(TOURNEY_TEAMS)]
 
 def get_adjusted_lehigh_method():
     df = pd.read_csv("src/adjusted_lehigh_ratings.csv")
-    return steal_ratings(df, "RAPM")
+    #return steal_ratings(df, "RAPM")
+    return df
 
 def get_srapm_ratings():
     df = pd.read_csv("src/srapm.csv")
     df = df.loc[(df["Season"] == "2020-21") & df["Team"].isin(TOURNEY_TEAMS)]
-    return steal_ratings(df, "RAPM")
+    #return steal_ratings(df, "RAPM")
+    return df.loc[(df["Season"] == "2020-21") & df["Team"].isin(TOURNEY_TEAMS)]
 
 
 def get_fivethirtyeight():
     df = pd.read_csv("src/fivethirtyeight.csv")
-    return steal_ratings(df.loc[df["team"].isin(TOURNEY_TEAMS)], "rating")
+    #return steal_ratings(df.loc[df["team"].isin(TOURNEY_TEAMS)], "rating")
+    return df.loc[df["team"].isin(TOURNEY_TEAMS)]
 
 
 def main():

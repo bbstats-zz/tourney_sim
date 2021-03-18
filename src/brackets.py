@@ -6,7 +6,8 @@ import numpy as np
 import json
 import sys, os
 from statsmodels import api as sm
-from src.constants import ESPN_SCORES
+from src.constants import AVG_SEED_WINS, ESPN_SCORES
+from scipy import stats
 
 
 myPath = os.path.dirname(os.path.abspath(__file__))
@@ -58,19 +59,29 @@ class Region:
 
 class Bracket:
     # @profile
-    def __init__(self, ratings: Dict, *regions: Region, exp_stdev: float = 16.5):
+    def __init__(
+        self,
+        ratings: Dict,
+        *regions: Region,
+        exp_stdev: float = 11.7,
+        pace_modifier: float = 68.4 / 100
+    ):
 
         self.regions = regions
         self.ratings = ratings
+        if pace_modifier:
+            self.ratings = {k: v * pace_modifier for k, v in self.ratings.items()}
         self.exp_stdev = exp_stdev
 
         self.teams = []
         self.team_regions = {}
+        self.team_seeds = {}
 
         for region in self.regions:
             self.teams += region.teams
             for team in region.teams:
                 self.team_regions[team] = region.region_name
+                self.team_seeds[team] = region.team_seeds[team]
 
         self.remaining_teams = self.teams
 
@@ -238,7 +249,8 @@ class Bracket:
         count_by_round = count_by_round / self.num_sims
         self.output_df = count_by_round.reset_index()
         self.output_df.columns = self.output_df.columns.astype(str)
-        self.output_df["region"]=self.output_df["team"].map(self.team_regions)
+        self.output_df["region"] = self.output_df["team"].map(self.team_regions)
+        self.output_df["seed"] = self.output_df["team"].map(self.team_seeds)
         self.run_analysis()
         # self.output_df.to_csv("test_csv.csv", index=False)
 
@@ -246,10 +258,16 @@ class Bracket:
         self.calculate_total_wins()
         self.calculate_volatility()
         self.output_df = self.output_df.fillna(0)
-        # self.calculate_roi()
-        # self.calculate_pase()
-        # self.calculate_sleeper_rating()
+        self.calculate_pase()
+        self.calculate_roi()
+        self.calculate_value_ratings()
         # Sleeper rating = volatility * 1/3 + pase * 1/6 + espn roi * 1/6 + 1/3 * number of wins
+
+    def calculate_pase(self):
+        self.output_df["avg_seed_wins"] = self.output_df["seed"].map(AVG_SEED_WINS)
+        self.output_df["wins_abv_seed"] = (
+            self.output_df["total_proj_wins"] - self.output_df["avg_seed_wins"]
+        )
 
     def calculate_total_wins(self):
         self.total_proj_wins = self.output_df[["2", "3", "4", "5", "6", "7"]].sum(
@@ -290,15 +308,25 @@ class Bracket:
         )
 
     def calculate_roi(self):
-        wpw_df = pd.read_csv("src/wpw.csv")
-
+        wpw_df = pd.read_csv("src/fixed_wpw.csv")
         self.output_df[["2_roi", "3_roi", "4_roi", "5_roi", "6_roi", "7_roi"]] = (
-            self.output_df[["2", "3", "4", "5", "6", "7"]] - wpw_df[[2, 3, 4, 5, 6, 7]]
-        ).multiply(ESPN_SCORES, axis=0)
+            self.output_df[["2", "3", "4", "5", "6", "7"]]
+            - wpw_df[["2", "3", "4", "5", "6", "7"]]
+        ).multiply(ESPN_SCORES, axis=1)
+        self.output_df["roi"] = self.output_df[
+            ["2_roi", "3_roi", "4_roi", "5_roi", "6_roi", "7_roi"]
+        ].sum(axis=1)
 
-    def calculate_pase(self):
-        # need to get seeds first
-        pass
+    def calculate_value_ratings(self):
+        # Sleeper rating = volatility * 1/3 + pase * 1/6 + espn roi * 1/6 + 1/3 * number of wins
+        z_volatility = stats.zscore(self.output_df["true_volatility"])
+        z_pase = stats.zscore(self.output_df["wins_abv_seed"])
+        z_roi = stats.zscore(self.output_df["roi"])
+        z_wins = stats.zscore(self.output_df["total_proj_wins"])
+        z_value = (
+            1 / 3 * z_volatility + 1 / 6 * z_pase + 1 / 6 * z_roi + 1 / 3 * z_wins
+        )
+        self.output_df["value_rating"] = stats.norm.cdf(z_value)*100
 
     @staticmethod
     def interpolate_lowess(x, y):

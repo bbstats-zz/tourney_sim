@@ -5,13 +5,14 @@ from simulation import main
 import base64
 from io import BytesIO
 from datetime import datetime
-from pandas.io.formats.style import Styler
+#from pandas.io.formats.style import Styler
 
 # -- Set page config
 apptitle = "2021 Lehigh Method NCAA Tournament Cheat Sheet"
 
 CM = color_palette("RdYlGn", as_cmap=True)
 HOT = color_palette("YlOrRd", as_cmap=True)
+MONEY = color_palette("YlGn", as_cmap=True)
 NEW_COLUMNS = {
     "2": "Ro32",
     "3": "Sweet16",
@@ -19,10 +20,14 @@ NEW_COLUMNS = {
     "5": "Final4",
     "6": "Championship",
     "7": "Winner",
-    "total_proj_wins": "Simulated # Wins",
+    "total_proj_wins": "Sim # Wins",
     "true_volatility": "Volatility",
     "team": "Team",
     "region": "Region",
+    "seed": "Seed",
+    "wins_abv_seed":"Wins>Seed Exp",
+    "roi":"ESPN ROI",
+    "value_rating":"Value Rating"
 }
 
 st.set_page_config(
@@ -54,10 +59,12 @@ def get_table_download_link(df, num_sims, source):
 
 
 def formatted_df(df, column_mapping=NEW_COLUMNS):
+    df["team"]=df["team"]+" ("+df["seed"].map(str)+")"
     df.rename(columns=column_mapping, inplace=True)
     df = df[
         [
             "Region",
+            #"Seed",
             "Team",
             "Ro32",
             "Sweet16",
@@ -65,11 +72,14 @@ def formatted_df(df, column_mapping=NEW_COLUMNS):
             "Final4",
             "Championship",
             "Winner",
-            "Simulated # Wins",
+            "Sim # Wins",
+            "Wins>Seed Exp",
             "Volatility",
+            "ESPN ROI",
+            "Value Rating"
         ]
     ]
-    df = df.sort_values("Simulated # Wins", ascending=False)
+    df = df.sort_values("Sim # Wins", ascending=False)
     df.set_index("Team", inplace=True, drop=True)
 
     rounding_formatting = {
@@ -79,13 +89,17 @@ def formatted_df(df, column_mapping=NEW_COLUMNS):
         "Final4": "{:,.1%}",
         "Championship": "{:,.1%}",
         "Winner": "{:,.1%}",
-        "Simulated # Wins": "{:,.2f}",
+        "Sim # Wins": "{:,.2f}",
+        "Wins>Seed Exp":"{:,.2f}",
         "Volatility": "{:,.1f}",
+        "ESPN ROI": "{:.0f}",
+        "Value Rating": "{:.0f}",
     }
 
     s = (
-        df.style.background_gradient(cmap=CM, subset=["Winner", "Simulated # Wins"])
+        df.style.background_gradient(cmap=CM, subset=["Winner", "Sim # Wins","Wins>Seed Exp"])
         .background_gradient(cmap=HOT, subset=["Volatility"])
+        .background_gradient(cmap=MONEY, subset=["ESPN ROI","Value Rating"])
         .format(rounding_formatting)
     )
     return s
@@ -111,7 +125,7 @@ select_subset = st.sidebar.selectbox(
         "Flancer sRAPM",
         "Sports Reference",
     ],
-    index=1,  # , "Flancer sRAPM (Minutes = Average)"]
+    index=0,  # , "Flancer sRAPM (Minutes = Average)"]
 )
 
 num_sims = st.sidebar.slider(
@@ -129,4 +143,4 @@ if go:
     )
 
     slot1.markdown(link, unsafe_allow_html=True)
-    slot2.dataframe(display_frame, width=3000, height=2000)
+    slot2.dataframe(display_frame, width=4000, height=2000)

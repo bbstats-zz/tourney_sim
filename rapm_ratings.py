@@ -114,6 +114,7 @@ class AdjustedLehighRatings:
 def main():
     teamratings = AdjustedLehighRatings()
     teamratings.adjusted_team_ratings.to_csv("src/adjusted_lehigh_ratings.csv")
+    teamratings.player_ratings.to_csv("src/adjusted_lehigh_player_ratings.csv")
 
 
 if __name__ == "__main__":
