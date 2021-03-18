@@ -3,8 +3,18 @@ import ssl
 from src.constants import URL, JAKE_TO_BBR, TOURNEY_TEAMS
 from scipy.stats import zscore
 
-gt_df = pd.read_pickle("src/2021_sr.p")
-GROUND_TRUTH = gt_df.loc[gt_df["School"].isin(TOURNEY_TEAMS)]["NRtg"]
+def get_lehigh_method():
+    df = pd.read_pickle("src/2021_tlm.p")
+    #return steal_ratings(df.loc[df["School"].isin(TOURNEY_TEAMS)], "TLM_NetRtg")
+    return df.loc[df["School"].isin(TOURNEY_TEAMS)]
+
+def get_adjusted_lehigh_method():
+    df = pd.read_csv("src/adjusted_lehigh_ratings.csv")
+    #return steal_ratings(df, "RAPM")
+    return df
+
+gt_df = get_adjusted_lehigh_method()
+GROUND_TRUTH = gt_df["RAPM"]
 
 
 def steal_ratings(
@@ -39,15 +49,7 @@ def get_ratings(url=URL):
     return df.loc[df["School"].isin(TOURNEY_TEAMS)]
 
 
-def get_lehigh_method():
-    df = pd.read_pickle("src/2021_tlm.p")
-    #return steal_ratings(df.loc[df["School"].isin(TOURNEY_TEAMS)], "TLM_NetRtg")
-    return df.loc[df["School"].isin(TOURNEY_TEAMS)]
 
-def get_adjusted_lehigh_method():
-    df = pd.read_csv("src/adjusted_lehigh_ratings.csv")
-    #return steal_ratings(df, "RAPM")
-    return df
 
 def get_srapm_ratings():
     df = pd.read_csv("src/srapm.csv")
@@ -58,8 +60,8 @@ def get_srapm_ratings():
 
 def get_fivethirtyeight():
     df = pd.read_csv("src/fivethirtyeight.csv")
-    #return steal_ratings(df.loc[df["team"].isin(TOURNEY_TEAMS)], "rating")
-    return df.loc[df["team"].isin(TOURNEY_TEAMS)]
+    return steal_ratings(df.loc[df["team"].isin(TOURNEY_TEAMS)], "rating")
+    #return df.loc[df["team"].isin(TOURNEY_TEAMS)]
 
 
 def main():

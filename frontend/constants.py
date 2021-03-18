@@ -18,3 +18,6 @@ NEW_COLUMNS = {
     "roi":"ESPN ROI",
     "value_rating":"Value Rating"
 }
+
+TLM_NAME = "Lehigh Method(w/ Flancer sRAPM)"
+FTE_NAME = "538"
