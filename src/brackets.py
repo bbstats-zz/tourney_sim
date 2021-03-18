@@ -309,6 +309,8 @@ class Bracket:
 
     def calculate_roi(self):
         wpw_df = pd.read_csv("src/fixed_wpw.csv")
+        wpw_df.set_index("Team",inplace=True)
+        self.output_df.set_index("team",inplace=True)
         self.output_df[["2_roi", "3_roi", "4_roi", "5_roi", "6_roi", "7_roi"]] = (
             self.output_df[["2", "3", "4", "5", "6", "7"]]
             - wpw_df[["2", "3", "4", "5", "6", "7"]]
@@ -316,6 +318,7 @@ class Bracket:
         self.output_df["roi"] = self.output_df[
             ["2_roi", "3_roi", "4_roi", "5_roi", "6_roi", "7_roi"]
         ].sum(axis=1)
+        self.output_df.reset_index(inplace=True)
 
     def calculate_value_ratings(self):
         # Sleeper rating = volatility * 1/3 + pase * 1/6 + espn roi * 1/6 + 1/3 * number of wins
