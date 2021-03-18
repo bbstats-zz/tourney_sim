@@ -105,7 +105,7 @@ def formatted_df(df, column_mapping=NEW_COLUMNS):
     return s
 
 
-@st.cache
+#@st.cache
 def simulate_tourney(num_sims, ratings_type):
     df = main(num_sims, ratings_type)
     return df
